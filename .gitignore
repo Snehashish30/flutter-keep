@@ -14,7 +14,7 @@ bak/
 # Project-specific
 local.dart
 **/GoogleService-Info.plist
-**/google-services.json
+
 web/init-firebase.js
 artworks/*.mp4
 

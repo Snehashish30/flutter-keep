@@ -8,6 +8,6 @@ gradle-wrapper.jar
 GeneratedPluginRegistrant.java
 
 # Project-specific
-google-services.json
+
 keystore.properties
 play-dev-*.json

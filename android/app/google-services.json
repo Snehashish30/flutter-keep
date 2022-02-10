@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "163977567329",
+    "project_id": "secretkeeper2-723a6",
+    "storage_bucket": "secretkeeper2-723a6.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:163977567329:android:aa99de7d1b78eda1c69e20",
+        "android_client_info": {
+          "package_name": "com.xinthink.fltkeep"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "163977567329-dvl109skgf49o0h12s2rn4e5rhspejsa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDuWfZ4x5zPAUJwbUOeYb1LT_DNRqDBOWg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "163977567329-dvl109skgf49o0h12s2rn4e5rhspejsa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
