@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "163977567329-4j5uj4a531f7gh3npdub7mb3qhsicjo4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.xinthink.fltkeep",
+            "certificate_hash": "e9180487bf83bfa60eba587af0c35dfce53d31f1"
+          }
+        },
+        {
           "client_id": "163977567329-dvl109skgf49o0h12s2rn4e5rhspejsa.apps.googleusercontent.com",
           "client_type": 3
         }
