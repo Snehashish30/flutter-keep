@@ -10,6 +10,7 @@ import 'package:flt_keep/services.dart' show NoteQuery;
 class Note extends ChangeNotifier {
   final String id;
   String title;
+  String type;
   String content;
   Color color;
   NoteState state;
@@ -20,6 +21,7 @@ class Note extends ChangeNotifier {
   Note({
     this.id,
     this.title,
+    this.type,
     this.content,
     this.color,
     this.state,
@@ -49,6 +51,7 @@ class Note extends ChangeNotifier {
   /// will also be copied from [other].
   void update(Note other, {bool updateTimestamp = true}) {
     title = other.title;
+    type = other.type;
     content = other.content;
     color = other.color;
     state = other.state;
@@ -67,12 +70,14 @@ class Note extends ChangeNotifier {
   /// `modifiedAt` will be updated to `DateTime.now()`.
   Note updateWith({
     String title,
+    String type,
     String content,
     Color color,
     NoteState state,
     bool updateTimestamp = true,
   }) {
     if (title != null) this.title = title;
+    if (type != null) this.type = type;
     if (content != null) this.content = content;
     if (color != null) this.color = color;
     if (state != null) this.state = state;
@@ -84,6 +89,7 @@ class Note extends ChangeNotifier {
   /// Serializes this note into a JSON object.
   Map<String, dynamic> toJson() => {
     'title': title,
+    'type': type,
     'content': content,
     'color': color?.value,
     'state': stateValue,
@@ -105,6 +111,7 @@ class Note extends ChangeNotifier {
   bool operator ==(other) => other is Note &&
     (other.id ?? '') == (id ?? '') &&
     (other.title ?? '') == (title ?? '') &&
+      (other.type ?? '') == (type ?? '') &&
     (other.content ?? '') == (content ?? '') &&
     other.stateValue == stateValue &&
     (other.color ?? 0) == (color ?? 0);

@@ -30,6 +30,7 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
     : this._note = note ?? Note(),
     _originNote = note?.copy() ?? Note(),
     this._titleTextController = TextEditingController(text: note?.title),
+    this._typeTextController = TextEditingController(text: note?.type),
     this._contentTextController = TextEditingController(text: note?.content);
 
   /// The note in editing
@@ -41,6 +42,7 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   StreamSubscription<Note> _noteSubscription;
   final TextEditingController _titleTextController;
+  final TextEditingController _typeTextController;
   final TextEditingController _contentTextController;
 
   /// If the note is modified.
@@ -50,6 +52,7 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
   void initState() {
     super.initState();
     _titleTextController.addListener(() => _note.title = _titleTextController.text);
+    _typeTextController.addListener(() => _note.type = _typeTextController.text);
     _contentTextController.addListener(() => _note.content = _contentTextController.text);
   }
 
@@ -57,6 +60,7 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
   void dispose() {
     _noteSubscription?.cancel();
     _titleTextController.dispose();
+    _typeTextController.dispose();
     _contentTextController.dispose();
     super.dispose();
   }
@@ -126,6 +130,20 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
         style: kNoteTitleLight,
         decoration: const InputDecoration(
           hintText: 'Title',
+          border: InputBorder.none,
+          counter: const SizedBox(),
+        ),
+        maxLines: null,
+        maxLength: 1024,
+        textCapitalization: TextCapitalization.sentences,
+        readOnly: !_note.state.canEdit,
+      ),
+      const SizedBox(height: 10),
+      TextField(
+        controller: _typeTextController,
+        style: kNoteTitleLight,
+        decoration: const InputDecoration(
+          hintText: 'Type',
           border: InputBorder.none,
           counter: const SizedBox(),
         ),
@@ -251,6 +269,7 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
 
     final refresh = () {
       _titleTextController.text = _note.title ?? '';
+      _typeTextController.text = _note.type ?? '';
       _contentTextController.text = _note.content ?? '';
       _originNote.update(note, updateTimestamp: false);
       _note.update(note, updateTimestamp: false);

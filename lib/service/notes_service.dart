@@ -118,6 +118,7 @@ extension NoteDocument on DocumentSnapshot {
     return Note(
       id: id,
       title: data['title'],
+      type: data['type'],
       content: data['content'],
       color: _parseColor(data['color']),
       state: NoteState.values[data['state'] ?? 0],
