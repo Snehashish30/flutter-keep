@@ -9,6 +9,7 @@ import 'package:flt_keep/models.dart' show CurrentUser, Note, NoteState, NoteSta
 import 'package:flt_keep/services.dart';
 import 'package:flt_keep/styles.dart';
 import 'package:flt_keep/widgets.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 /// The editor of a [Note], also shows every detail about a single note.
 class NoteEditor extends StatefulWidget {
@@ -48,9 +49,8 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
   /// If the note is modified.
   bool get _isDirty => _note != _originNote;
 
-  String dropdownvalue = 'Bank';
+  var dropdownvalue ;
   var items = [
-    'Bank',
     'Insurance',
     'Investment',
     'PF',
@@ -162,30 +162,61 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
         readOnly: !_note.state.canEdit,
       ),
       const SizedBox(height: 10),
-      DropdownButton(
 
-        // Initial Value
-        value: dropdownvalue,
-
-        // Down Arrow Icon
-        icon: const Icon(Icons.keyboard_arrow_down),
-
-        // Array list of items
-        items: items.map((String items) {
-          return DropdownMenuItem(
-            value: items,
-            child: Text(items),
-          );
-        }).toList(),
-        // After selecting the desired option,it will
-        // change button value to selected value
-        onChanged: (String newValue) {
-          setState(() {
-            dropdownvalue = newValue;
-          });
-        },
-      ),
+      StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection("noteType").snapshots(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData)
+              const Text("Loading.....");
+            else {
+              List<DropdownMenuItem> noteItems = [];
+              //print(snapshot.data.docs.length);
+              for (int i = 0; i < snapshot.data.docs.length; i++) {
+                DocumentSnapshot snap = snapshot.data.docs[i];
+                //print(snapshot.data.docs[i]);
+                print('Ran');
+                noteItems.add(
+                  DropdownMenuItem(
+                    child: Text(
+                      snap.id,
+                      style: TextStyle(color: Color(0xff11b719)),
+                    ),
+                    value: "${snap.id}",
+                  ),
+                );
+              }
+              return Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  SizedBox(width: 50.0),
+                  DropdownButton(
+                    items: noteItems,
+                    /*items: items.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),*/
+                    onChanged: (newValue) {
+                      setState(() {
+                        dropdownvalue = newValue;
+                      });
+                    },
+                    value: dropdownvalue,
+                    isExpanded: false,
+                    hint: new Text(
+                      "Choose Note Type",
+                      style: TextStyle(color: Color(0xff11b719)),
+                    ),
+                  ),
+                ],
+              );
+            }
+            //print('Exiting to print Blank Container');
+            return Container(width: 0.0, height: 0.0);
+          }),
       const SizedBox(height: 14),
+
       TextField(
         controller: _contentTextController,
         style: kNoteTextLargeLight,
