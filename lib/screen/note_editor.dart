@@ -48,6 +48,15 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
   /// If the note is modified.
   bool get _isDirty => _note != _originNote;
 
+  String dropdownvalue = 'Bank';
+  var items = [
+    'Bank',
+    'Insurance',
+    'Investment',
+    'PF',
+  ];
+
+
   @override
   void initState() {
     super.initState();
@@ -151,6 +160,30 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
         maxLength: 1024,
         textCapitalization: TextCapitalization.sentences,
         readOnly: !_note.state.canEdit,
+      ),
+      const SizedBox(height: 10),
+      DropdownButton(
+
+        // Initial Value
+        value: dropdownvalue,
+
+        // Down Arrow Icon
+        icon: const Icon(Icons.keyboard_arrow_down),
+
+        // Array list of items
+        items: items.map((String items) {
+          return DropdownMenuItem(
+            value: items,
+            child: Text(items),
+          );
+        }).toList(),
+        // After selecting the desired option,it will
+        // change button value to selected value
+        onChanged: (String newValue) {
+          setState(() {
+            dropdownvalue = newValue;
+          });
+        },
       ),
       const SizedBox(height: 14),
       TextField(
