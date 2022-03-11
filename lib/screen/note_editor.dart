@@ -39,7 +39,6 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
   /// The origin copy before editing
   final Note _originNote;
   Color get _noteColor => _note.color ?? kDefaultNoteColor;
-
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   StreamSubscription<Note> _noteSubscription;
   final TextEditingController _titleTextController;
@@ -63,6 +62,7 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
     _titleTextController.addListener(() => _note.title = _titleTextController.text);
     _typeTextController.addListener(() => _note.type = _typeTextController.text);
     _contentTextController.addListener(() => _note.content = _contentTextController.text);
+    dropdownvalue = _note.dropDownVal;
   }
 
   @override
@@ -200,6 +200,7 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
                     onChanged: (newValue) {
                       setState(() {
                         dropdownvalue = newValue;
+                        _note.dropDownVal = dropdownvalue;
                       });
                     },
                     value: dropdownvalue,

@@ -119,6 +119,7 @@ extension NoteDocument on DocumentSnapshot {
       id: id,
       title: data['title'],
       type: data['type'],
+      dropDownVal: data['dropDownVal'],
       content: data['content'],
       color: _parseColor(data['color']),
       state: NoteState.values[data['state'] ?? 0],

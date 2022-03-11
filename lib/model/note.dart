@@ -16,6 +16,7 @@ class Note extends ChangeNotifier {
   NoteState state;
   final DateTime createdAt;
   DateTime modifiedAt;
+  String dropDownVal;
 
   /// Instantiates a [Note].
   Note({
@@ -27,6 +28,7 @@ class Note extends ChangeNotifier {
     this.state,
     DateTime createdAt,
     DateTime modifiedAt,
+    this.dropDownVal,
   }) : this.createdAt = createdAt ?? DateTime.now(),
     this.modifiedAt = modifiedAt ?? DateTime.now();
 
@@ -55,6 +57,7 @@ class Note extends ChangeNotifier {
     content = other.content;
     color = other.color;
     state = other.state;
+    dropDownVal = other.dropDownVal;
 
     if (updateTimestamp || other.modifiedAt == null) {
       modifiedAt = DateTime.now();
@@ -71,6 +74,7 @@ class Note extends ChangeNotifier {
   Note updateWith({
     String title,
     String type,
+    String dropDownVal,
     String content,
     Color color,
     NoteState state,
@@ -78,6 +82,7 @@ class Note extends ChangeNotifier {
   }) {
     if (title != null) this.title = title;
     if (type != null) this.type = type;
+    if (dropDownVal != null) this.dropDownVal = dropDownVal;
     if (content != null) this.content = content;
     if (color != null) this.color = color;
     if (state != null) this.state = state;
@@ -90,6 +95,7 @@ class Note extends ChangeNotifier {
   Map<String, dynamic> toJson() => {
     'title': title,
     'type': type,
+    'dropDownVal': dropDownVal,
     'content': content,
     'color': color?.value,
     'state': stateValue,
@@ -112,6 +118,7 @@ class Note extends ChangeNotifier {
     (other.id ?? '') == (id ?? '') &&
     (other.title ?? '') == (title ?? '') &&
       (other.type ?? '') == (type ?? '') &&
+      (other.dropDownVal ?? '') == (dropDownVal ?? '') &&
     (other.content ?? '') == (content ?? '') &&
     other.stateValue == stateValue &&
     (other.color ?? 0) == (color ?? 0);
