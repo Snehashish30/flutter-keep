@@ -54,6 +54,8 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
     'Investment',
     'PF',
   ];
+  List<DropdownMenuItem> noteItems = [];
+
 
 
   @override
@@ -63,6 +65,7 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
     _typeTextController.addListener(() => _note.type = _typeTextController.text);
     _contentTextController.addListener(() => _note.content = _contentTextController.text);
     dropdownvalue = _note.dropDownVal;
+
   }
 
   @override
@@ -76,6 +79,7 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
 
   @override
   Widget build(BuildContext context) {
+    print('Running build with context');
     final uid = Provider.of<CurrentUser>(context).data.uid;
     _watchNoteDocument(uid);
     return ChangeNotifierProvider.value(
@@ -134,6 +138,69 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
   Widget _buildNoteDetail() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: <Widget>[
+      StreamBuilder<QuerySnapshot>(
+          stream: FirebaseFirestore.instance.collection("noteType").snapshots(),
+          builder: (context, snapshot) {
+            print('Stream builder Ran');
+
+            if (!snapshot.hasData){ print('Stream builder Found no Data');
+            const Text("Loading.....");}
+            else {
+              //print(snapshot.data.docs.length);
+              if (noteItems.length == 0)
+                {
+                  for (int i = 0; i < snapshot.data.docs.length; i++) {
+                    DocumentSnapshot snap = snapshot.data.docs[i];
+                    //print(snapshot.data.docs[i]);
+                    //print('Ran and Menu item got items: ' + noteItems.toString());
+                    noteItems.add(
+                      DropdownMenuItem(
+                        child: Text(
+                          snap.id,
+                          style: TextStyle(color: Color(0xff11b719)),
+                        ),
+                        value: "${snap.id}",
+                      ),
+                    );
+                  }
+                }
+
+              print('Ran and Menu item got items: ' + noteItems.length.toString());
+
+
+            }
+            const SizedBox(height: 14);
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                SizedBox(width: 50.0),
+                DropdownButton(
+                  items: noteItems,
+                  /*items: items.map<DropdownMenuItem<String>>((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    }).toList(),*/
+                  onChanged: (newValue) {
+                    setState(() {
+                      dropdownvalue = newValue;
+                      _note.dropDownVal = dropdownvalue;
+                    });
+                  },
+                  value: _note.dropDownVal,
+                  isExpanded: false,
+                  hint: new Text(
+                    "Choose Note Type",
+                    style: TextStyle(color: Color(0xff11b719)),
+                  ),
+                ),
+              ],
+            );
+            //print('Exiting to print Blank Container');
+            return Container(width: 0.0, height: 0.0);
+          }),
+      const SizedBox(height: 14),
       TextField(
         controller: _titleTextController,
         style: kNoteTitleLight,
@@ -163,60 +230,8 @@ class _NoteEditorState extends State<NoteEditor> with CommandHandler {
       ),
       const SizedBox(height: 10),
 
-      StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance.collection("noteType").snapshots(),
-          builder: (context, snapshot) {
-            if (!snapshot.hasData)
-              const Text("Loading.....");
-            else {
-              List<DropdownMenuItem> noteItems = [];
-              //print(snapshot.data.docs.length);
-              for (int i = 0; i < snapshot.data.docs.length; i++) {
-                DocumentSnapshot snap = snapshot.data.docs[i];
-                //print(snapshot.data.docs[i]);
-                print('Ran');
-                noteItems.add(
-                  DropdownMenuItem(
-                    child: Text(
-                      snap.id,
-                      style: TextStyle(color: Color(0xff11b719)),
-                    ),
-                    value: "${snap.id}",
-                  ),
-                );
-              }
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  SizedBox(width: 50.0),
-                  DropdownButton(
-                    items: noteItems,
-                    /*items: items.map<DropdownMenuItem<String>>((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),*/
-                    onChanged: (newValue) {
-                      setState(() {
-                        dropdownvalue = newValue;
-                        _note.dropDownVal = dropdownvalue;
-                      });
-                    },
-                    value: dropdownvalue,
-                    isExpanded: false,
-                    hint: new Text(
-                      "Choose Note Type",
-                      style: TextStyle(color: Color(0xff11b719)),
-                    ),
-                  ),
-                ],
-              );
-            }
-            //print('Exiting to print Blank Container');
-            return Container(width: 0.0, height: 0.0);
-          }),
-      const SizedBox(height: 14),
+
+
 
       TextField(
         controller: _contentTextController,
