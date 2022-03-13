@@ -4,10 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flt_keep/page/fingerprint_page.dart';
 
 
 import 'models.dart' show CurrentUser;
 import 'screens.dart' show HomeScreen, LoginScreen, NoteEditor, SettingsScreen;
+
 import 'styles.dart';
 
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
@@ -74,7 +76,7 @@ class NotesApp extends StatelessWidget {
         ),
         home: user.isInitialValue
           ? Scaffold(body: const SizedBox())
-          : user.data != null ? HomeScreen() : LoginScreen(),
+          : user.data != null ? FingerprintPage() : LoginScreen(),
         routes: {
           '/settings': (_) => SettingsScreen(),
         },
