@@ -1,5 +1,7 @@
 {
   "projects": {
-    "default": "fltflynotes"
-  }
+    "default": "secretkeeper2-723a6",
+    "staging": "secretkeeper2-723a6"
+  },
+  "targets": {}
 }

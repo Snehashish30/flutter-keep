@@ -80,6 +80,7 @@ class NotesApp extends StatelessWidget {
           : user.data != null ? FingerprintPage() : LoginScreen(),
         routes: {
           '/settings': (_) => SettingsScreen(),
+          '/login': (context) => LoginScreen(),
         },
         onGenerateRoute: _generateRoute,
       ),
