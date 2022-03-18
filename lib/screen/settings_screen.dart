@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flt_keep/styles.dart';
@@ -72,6 +73,10 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
     if (yes) {
       FirebaseAuth.instance.signOut();
+      User user = FirebaseAuth.instance.currentUser;
+      await FirebaseFirestore.instance.collection("appUsers").doc(user.uid).update({
+        'lastLogoutTime': DateTime.now()
+      });
       //Navigator.pop(context, true);
       Navigator.of(context).popUntil((route) => route.isFirst);
     }

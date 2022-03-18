@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_sign_in/google_sign_in.dart' show GoogleSignIn;
@@ -163,6 +164,11 @@ class _LoginScreenState extends State<LoginScreen> {
         accessToken: googleAuth.accessToken,
       );
       await _auth.signInWithCredential(credential);
+      User user = FirebaseAuth.instance.currentUser;
+      await FirebaseFirestore.instance.collection("appUsers").doc(user.uid).set({
+        'uid': user.uid,
+        'lastLoginTime': DateTime.now()
+      });
     } catch (e, s) {
       debugPrint('google signIn failed: $e. $s');
       errMsg = 'Login failed, please try again later.';

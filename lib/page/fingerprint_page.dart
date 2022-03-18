@@ -5,6 +5,8 @@ import 'package:flt_keep/main.dart';
 import 'package:flt_keep/screens.dart' show HomeScreen;
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FingerprintPage extends StatelessWidget {
   @override
@@ -74,6 +76,10 @@ class FingerprintPage extends StatelessWidget {
       final isAuthenticated = await LocalAuthApi.authenticate();
 
       if (isAuthenticated) {
+        User user = FirebaseAuth.instance.currentUser;
+        await FirebaseFirestore.instance.collection("appUsers").doc(user.uid).update({
+          'lastLoginTime': DateTime.now()
+        });
         //Navigator.pop(context, true);
         Navigator.of(context).push(
           MaterialPageRoute(builder: (context) => HomeScreen()),
