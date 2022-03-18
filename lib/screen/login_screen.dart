@@ -167,7 +167,8 @@ class _LoginScreenState extends State<LoginScreen> {
       User user = FirebaseAuth.instance.currentUser;
       await FirebaseFirestore.instance.collection("appUsers").doc(user.uid).set({
         'uid': user.uid,
-        'lastLoginTime': DateTime.now()
+        'lastLoginTime': DateTime.now(),
+        'currentStatus' : 'Signed In'
       });
     } catch (e, s) {
       debugPrint('google signIn failed: $e. $s');

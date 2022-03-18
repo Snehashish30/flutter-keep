@@ -78,7 +78,8 @@ class FingerprintPage extends StatelessWidget {
       if (isAuthenticated) {
         User user = FirebaseAuth.instance.currentUser;
         await FirebaseFirestore.instance.collection("appUsers").doc(user.uid).update({
-          'lastLoginTime': DateTime.now()
+          'lastLoginTime': DateTime.now(),
+          'currentStatus' : 'Logged In'
         });
         //Navigator.pop(context, true);
         Navigator.of(context).push(

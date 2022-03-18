@@ -75,7 +75,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
       FirebaseAuth.instance.signOut();
       User user = FirebaseAuth.instance.currentUser;
       await FirebaseFirestore.instance.collection("appUsers").doc(user.uid).update({
-        'lastLogoutTime': DateTime.now()
+        'lastLogoutTime': DateTime.now(),
+        'currentStatus' : 'Logged Out'
       });
       //Navigator.pop(context, true);
       Navigator.of(context).popUntil((route) => route.isFirst);
