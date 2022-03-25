@@ -1,56 +1,63 @@
-import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
+import * as functions from 'firebase-functions';
+
 admin.initializeApp();
-const db = admin.firestore();
+const firestoreAdmin = new admin.firestore.v1.FirestoreAdminClient();
+const projectId = 'fltflynotes';
 
-export const taskRunner = functions.runWith( { memory: '2GB' }).pubsub
+/**
+ * Trigger on user creation.
+ */
+exports.createIndex = functions.auth.user().onCreate((user) => createIndex(user.uid));
 
-    .schedule('* * * * *').onRun(async context => {
+/**
+ * Create notes collection index for the user.
+ * @param uid User id
+ */
+async function createIndex(uid: string): Promise<any> {
+  const index: Index = {
+    fields: [
+      {
+        fieldPath: 'state',
+        order: 'DESCENDING',
+      }, {
+        fieldPath: 'createdAt',
+        order: 'DESCENDING',
+      },
+    ],
+    queryScope: 'COLLECTION',
+  };
+  const operations = await firestoreAdmin.createIndex({
+    index,
+    parent: `projects/${projectId}/databases/(default)/collectionGroups/notes-${uid}`,
+  });
+  const indexId = operations[0].metadata.index;
+  console.log('index created:', indexId);
+  return indexId;
+}
 
-        // Consistent timestamp
-        const now = admin.firestore.Timestamp.now();
+/**
+ * Testing only. List indexes of a given collection.
+ *
+ * Query params:
+ * - db: database id, for now, it should be: (default)
+ * - uid: user id
+ * - filter
+ */
+exports.indexes = functions.https.onRequest((req, res) =>
+  firestoreAdmin.listIndexes({
+    parent: `projects/${projectId}/databases/${req.query.db}/collectionGroups/notes-${req.query.uid}`,
+    filter: req.query.filter,
+  }).then((data: any) => {
+    console.log('got indexes', data);
+    res.send(JSON.stringify(data));
+  }).catch((e: any) => {
+    console.error('failed to list index', e);
+    res.sendStatus(500);
+  }));
 
-        // Query all documents ready to perform
-        const query = db.collection('tasks').where('performAt', '<=', now).where('status', '==', 'scheduled');
-
-        const tasks = await query.get();
-
-
-        // Jobs to execute concurrently.
-        const jobs: Promise<any>[] = [];
-
-        // Loop over documents and push job.
-        tasks.forEach(snapshot => {
-            const { worker, options} = snapshot.data();
-            const newOptions = new Map(Object.entries(options));
-			const phoneNum = newOptions.get('phoneNumber');
-			const location = newOptions.get('location');
-			//console.log('Showing New Options');
-			//console.log(newOptions);
-			//console.log('Showing Derived value');
-			console.log(phoneNum);
-			console.log(location);
-            const job = workers[worker](newOptions)
-
-                // Update doc with status on success or error
-                .then(() => snapshot.ref.update({ status: 'complete' }))
-                .catch((err) => snapshot.ref.update({ status: 'error' }));
-
-            jobs.push(job);
-        });
-
-        // Execute all jobs concurrently
-        return await Promise.all(jobs);
-
+/** Test the [createIndex] function using http endpoint. */
+exports.testIndex = functions.https.onRequest(async (req, res) => {
+  const result = await createIndex(req.query.uid);
+  res.send(JSON.stringify(result));
 });
-
-// Optional interface, all worker functions should return Promise.
-interface Workers {
-    [key: string]: (newOptions: any) => Promise<any>
-}
-
-// Business logic for named tasks. Function name should match worker field on task document.
-const workers: Workers = {
-    helloWorld: () => db.collection('logs').add({ hello: 'world' }),
-	helloWorldSpecific: (newOptions) => db.collection('logs').add({ hello: 'world', to: 'me', by : newOptions.get('phoneNumber'), from: newOptions.get('location') })
-}

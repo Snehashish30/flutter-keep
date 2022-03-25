@@ -3,5 +3,8 @@
     "babel-eslint": "^10.1.0",
     "eslint": "^8.11.0",
     "eslint-config-google": "^0.14.0"
+  },
+  "dependencies": {
+    "@sendgrid/mail": "^7.6.2"
   }
 }

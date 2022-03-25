@@ -1,15 +1,40 @@
-const functions = require('firebase-functions');
+const functions = require("firebase-functions");
+
 const admin = require('firebase-admin');
-admin.initializeApp();
+admin.initializeApp(functions.config().firebase);
 
-const db = admin.firestore();
+const SENDGRID_API_KEY = functions.config().sendgrid.key
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-exports.onUserCreate = functions.firestore.document('users/{userId}').onCreate(async (snap, context) => {
-    const values = snap.data();
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(SENDGRID_API_KEY);
 
-    // send email
-    await db.collection('logging').add({ description: `Email was sent to user with username:${values.username}` });
-})
+exports.firestoreEmail = functions.firestore
+    .document('users/{userId}/followers/{followerId}')
+    .onCreate((snap, context) => {
+        const userId = context.params.userId;
+		console.log('Displaying UserId');
+		console.log(userId);
+        const db = admin.firestore()
+
+        return  db.collection('users').doc(userId)
+            .get()
+            .then(doc => {
+                const user = doc.data()
+
+                const msg = {
+                    to: user.email,
+                    from: 'paulsubhashish13@gmail.com',
+                    subject: 'Claim Intimation',
+                    templateId: 'd-efc4577efc6b479791ab89c8663aa1b0',
+                    substitutionWrappers: ['{{','}}'],
+                    substitutions: {
+                        name: user.displayName
+                    }
+
+                };
+
+                return sgMail.send(msg)
+                })
+                .then(() => console.log('email sent'))
+                .catch(err => console.log(err))
+        });
